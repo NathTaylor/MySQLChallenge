@@ -1,0 +1,222 @@
+SALIKA
+
+1   SELECT * FROM actor
+
+2   SELECT last_name FROM actor
+    WHERE first_name = 'John';
+
+3   SELECT * FROM actor
+    WHERE last_name = 'Neeson';	
+
+4   SELECT * FROM actor WHERE actor_id % 10 = 0;
+
+5   SELECT * FROM film
+    WHERE film_id = 100;
+
+6   SELECT * FROM film
+    WHERE rating = 'R';
+
+7   SELECT * FROM film
+    WHERE rating != 'R';
+
+8   SELECT title, length
+    FROM film
+    ORDER BY length LIMIT 10;
+
+9   SELECT * FROM film 
+    WHERE length = (
+    SELECT MAX(length) FROM film);
+
+10  SELECT title FROM film 
+    WHERE special_features LIKE '%deleted scenes%';
+
+11  SELECT DISTINCT(last_name) FROM actor
+    HAVING last_name IS NOT NULL
+    ORDER BY last_name DESC;
+	
+12  SELECT COUNT(actor_id), 
+    last_name FROM actor 
+	GROUP BY last_name 
+	HAVING COUNT(actor_id) > 1 
+	ORDER BY COUNT(actor_id) DESC;
+	
+13 	SELECT film_actor.actor_id, 
+	actor_info.first_name, actor_info.last_name, 
+	COUNT(film_actor.actor_id) AS films FROM film_actor 
+	JOIN actor_info ON film_actor.actor_id = actor_info.actor_id 
+	GROUP BY film_actor.actor_id 
+	ORDER BY COUNT(film_actor.actor_id) DESC LIMIT 1;
+	
+14  SELECT release_year FROM film
+    WHERE title = 'Academy Dinosaur';
+	
+15  SELECT AVG(length) FROM film;
+
+16  SELECT category, AVG(length) FROM film_list GROUP BY category;
+
+17  SELECT title, description FROM film WHERE description LIKE '%robot%';
+
+18  SELECT * FROM film
+    WHERE release_year = '2010';
+
+19  SELECT title FROM film_list
+    WHERE category = 'Horror';
+
+20  SELECT first_name, last_name
+    FROM staff
+    WHERE staff_id = '2';
+
+21  SELECT title FROM film_list
+    WHERE actors LIKE '%Costner%';
+
+22  SELECT DISTINCT country FROM country;	
+	
+23  SELECT name
+    FROM language
+    ORDER BY name DESC;	
+ 
+24  SELECT first_name, last_name
+    FROM ACTOR
+    WHERE last_name LIKE '%son%'
+	ORDER BY first_name ASC;
+
+25  SELECT category, 
+    COUNT(category) 
+	FROM film_list 
+	GROUP BY category 
+	ORDER BY COUNT(category) 
+	DESC LIMIT 1;	
+	
+	
+WORLD 
+
+1   SELECT COUNT(name)
+    -> FROM city
+    -> WHERE CountryCode = 'USA';
+
+2   SELECT Population, LifeExpectancy
+    -> FROM country
+    -> WHERE name = 'Argentina';	
+ 
+3   SELECT name 
+    FROM country 
+	WHERE lifeexpectancy 
+	IS NOT NULL 
+	ORDER BY lifeexpectancy 
+	DESC LIMIT 1;
+ 
+4   SELECT city.name
+    FROM city JOIN country
+    ON city.id = country.capital
+    WHERE country.name = 'Spain';
+	
+5   SELECT countrylanguage.language,
+    COUNT(countrylanguage.language)
+    FROM countrylanguage
+    JOIN country ON countrylanguage.countrycode = country.code
+    WHERE country.region = 'Southeast Asia'
+    GROUP BY countrylanguage.language;
+
+6   SELECT name FROM city WHERE name LIKE 'f%' LIMIT 25;
+
+7   SELECT country.name, 
+    COUNT(city.countrycode)
+    FROM city
+    JOIN country ON city.countrycode = country.code
+    WHERE country.name = 'China';
+	
+8   SELECT name FROM country
+    WHERE country.population IS NOT NULL
+    ORDER BY name DESC
+    LIMIT 1;
+
+9   SELECT COUNT(name) FROM country;
+
+
+10  SELECT name 
+    FROM country 
+	ORDER BY surfacearea 
+	DESC LIMIT 10;
+
+
+11  SELECT name 
+    FROM city 
+	WHERE countrycode = (
+	SELECT code FROM country 
+	WHERE name = 'Japan') 
+	ORDER BY population DESC LIMIT 5;
+
+12  UPDATE country
+    SET HeadOfState = 'Elizabeth II'
+    WHERE HeadOfState = 'Elisabeth II';
+
+    SELECT name, code FROM country
+    WHERE HeadOfState = 'Elizabeth II';
+
+13  SELECT name, (population/surfacearea) 
+    AS ratio FROM country 
+	HAVING ratio != 0 
+	ORDER BY ratio ASC LIMIT 10;
+
+
+14  SELECT DISTINCT language FROM CountryLanguage;	
+	
+15	SELECT name, gnp 
+    FROM country 
+	ORDER BY gnp 
+	DESC LIMIT 10;
+
+16  SELECT country.name, COUNT(countrylanguage.language) AS counter 
+    FROM country
+    JOIN countrylanguage 
+	ON country.code = countrylanguage.countrycode
+    GROUP BY country.name
+    ORDER BY  counter DESC LIMIT 10;
+	
+17  SELECT country.name
+    FROM country
+    JOIN countrylanguage ON country.code = countrylanguage.countrycode
+    WHERE countrylanguage.language = 'German' AND countrylanguage.percentage > 50;
+	
+18  SELECT name, MIN(lifeexpectancy) FROM country
+    WHERE lifeexpectancy IS NOT NULL AND lifeexpectancy != 0;
+	
+19  SELECT governmentform, COUNT(governmentform) AS counter FROM country
+    GROUP BY governmentform
+    ORDER BY counter DESC LIMIT 3;
+	
+20  SELECT COUNT(indepYear) 
+    FROM country 
+	WHERE indepYear IS NOT NULL;
+
+   
+MOVIELENS
+
+1   SELECT title, release_date FROM movies 
+    WHERE release_date BETWEEN '1983-01-01' AND '1993-01-01' 
+    ORDER BY release_date DESC;
+	
+2   SELECT movies.title, ratings.rating FROM movies 
+    JOIN ratings ON movies.id = ratings.movie_id
+    HAVING ratings.rating < AVG(ratings.rating);	
+	
+3   SELECT DISTINCT * FROM movies 
+    JOIN genres_movies ON movies.id = genres_movies.movie_id
+    JOIN ratings ON movies.id = ratings.movie_id
+    WHERE genres_movies.genre_id = (SELECT id FROM genres WHERE name = 'Sci-Fi')
+    AND ratings.rating = 5
+    AND ratings.user_id IN (
+	 SELECT id FROM users WHERE gender = 'M' AND age = 24 AND occupation_id =(
+		SELECT id FROM occupations WHERE name = 'Student'));	
+		
+4   SELECT DISTINCT title FROM movies
+    WHERE release_date = (
+    SELECT release_date FROM MOVIES
+    GROUP BY release_date
+    ORDER BY COUNT(release_date)
+    DESC LIMIT 1);
+	
+5   SELECT genres.name, COUNT(genres_movies.movie_id) AS counter FROM genres
+    JOIN genres_movies ON genres.id = genres_movies.genre_id
+    GROUP BY genres_movies.genre_id
+    ORDER BY counter ASC;
